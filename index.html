@@ -1,0 +1,1133 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Lǎoshī 老师 · Mandarin study partner</title>
+<meta name="description" content="A Mandarin study partner for HSK 1–2: spaced-repetition flashcards, an AI conversation tutor that corrects you, AI-written grammar lessons, and progress tracking. One HTML file, no build step.">
+<meta name="theme-color" content="#B3241B">
+<meta property="og:title" content="Lǎoshī 老师 · Mandarin study partner">
+<meta property="og:description" content="Flashcards, an AI conversation tutor and grammar lessons for HSK 1–2 Mandarin.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='10' fill='%23B3241B'/%3E%3Crect x='8' y='8' width='48' height='48' rx='7' fill='none' stroke='%23C9A23A' stroke-width='2.5'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23FFF8EC' font-family='serif' font-weight='700'%3E%E5%B8%88%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;700&display=swap">
+<style>
+/* Layout: a study desk in 中国红 and imperial gold on rice paper (red lacquer in dark mode). One column of work with a seal-stamped header; tabs at top on desktop, at the bottom on phones. Pinyin is coloured by tone everywhere. */
+:root{
+  --bg:#F8F2E7; --surface:#FFFCF5; --sunk:#F1E7D6; --ink:#231915; --muted:#6F6157; --line:#E5D6C1;
+  --red:#B3241B; --red-ink:#FFF8EC; --red-soft:#F7E0D9; --gold:#9C7210; --gold-soft:#F4E8C8; --gold-line:#C9A23A; --ok:#2C7A57; --ok-soft:#DCEFE4;
+  --t1:#C93A30; --t2:#C47A0E; --t3:#24804F; --t4:#2F63C4; --t5:#857A72;
+  --heat0:#EDE2D0; --heat1:#EFC2B5; --heat2:#DE8A78; --heat3:#C2493A; --heat4:#9E1F17;
+  --f-hz:"Noto Serif SC","Songti SC","STSong",serif;
+  --f-ui:"Figtree",system-ui,-apple-system,"PingFang SC","Noto Sans SC",sans-serif;
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#150D0B; --surface:#1F1512; --sunk:#2A1D19; --ink:#F3E8DA; --muted:#B4A393; --line:#3B2B25;
+  --red:#E8553F; --red-ink:#1A0E0B; --red-soft:#3D1C16; --gold:#E2B94E; --gold-soft:#3A2D13; --gold-line:#B8902E; --ok:#62C493; --ok-soft:#173327;
+  --t1:#FF7B70; --t2:#F0B04C; --t3:#62CC8F; --t4:#82A8FF; --t5:#A89A90;
+  --heat0:#2A1D19; --heat1:#4A2019; --heat2:#7A2E22; --heat3:#B4432F; --heat4:#E8553F; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#150D0B; --surface:#1F1512; --sunk:#2A1D19; --ink:#F3E8DA; --muted:#B4A393; --line:#3B2B25;
+  --red:#E8553F; --red-ink:#1A0E0B; --red-soft:#3D1C16; --gold:#E2B94E; --gold-soft:#3A2D13; --gold-line:#B8902E; --ok:#62C493; --ok-soft:#173327;
+  --t1:#FF7B70; --t2:#F0B04C; --t3:#62CC8F; --t4:#82A8FF; --t5:#A89A90;
+  --heat0:#2A1D19; --heat1:#4A2019; --heat2:#7A2E22; --heat3:#B4432F; --heat4:#E8553F; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0}
+html,body{background:var(--bg);color:var(--ink)}
+body{background-image:linear-gradient(var(--red),var(--red)),repeating-linear-gradient(90deg,var(--gold-line) 0 10px,transparent 10px 14px);background-size:100% 4px,100% 2px;background-position:0 0,0 6px;background-repeat:no-repeat}
+body{font-family:var(--f-ui);font-size:15px;line-height:1.55;padding-inline:16px;padding-block:0 96px}
+.wrap{max-width:860px;margin:0 auto}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+h1,h2,h3{text-wrap:balance;margin:0;line-height:1.25}
+h2{font-size:1.15rem;font-weight:700}
+h3{font-size:1rem;font-weight:600}
+p{margin:0}
+.hz{font-family:var(--f-hz)}
+.muted{color:var(--muted)}
+.label{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.t1{color:var(--t1)}.t2{color:var(--t2)}.t3{color:var(--t3)}.t4{color:var(--t4)}.t5{color:var(--t5)}
+
+/* header */
+header.top{display:flex;align-items:center;gap:14px;padding-block:18px 10px;flex-wrap:wrap}
+.seal{width:42px;height:42px;border-radius:7px;background:var(--red);color:var(--red-ink);display:grid;place-items:center;font-family:var(--f-hz);font-size:24px;font-weight:700;box-shadow:inset 0 0 0 2px var(--gold-line),0 0 0 1px var(--red);transform:rotate(-4deg);flex:none}
+.brand{display:flex;flex-direction:column;min-width:0}
+.brand b{font-family:var(--f-hz);font-size:1.25rem;letter-spacing:.02em}
+.brand span{font-size:.8rem;color:var(--muted)}
+.sync{margin-left:auto;font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.sync i{width:7px;height:7px;border-radius:50%;background:var(--t5);display:inline-block}
+.sync.on i{background:var(--red)}
+nav.tabs{display:flex;gap:4px;border-bottom:3px double var(--gold-line);margin-bottom:20px}
+nav.tabs button{background:none;border:0;padding:10px 14px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-3px;display:flex;align-items:center;gap:7px}
+nav.tabs button[aria-current="page"]{color:var(--ink);border-color:var(--red)}
+nav.tabs .hz{font-size:.95rem}
+.badge{background:var(--red);color:var(--red-ink);border-radius:99px;font-size:.7rem;padding:0 6px;line-height:1.5;font-weight:700}
+@media (max-width:640px){
+  nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--surface);border-top:3px double var(--gold-line);border-bottom:0;margin:0;justify-content:space-around;padding:4px 4px calc(4px + env(safe-area-inset-bottom,0px))}
+  nav.tabs button{flex-direction:column;gap:0;padding:6px 4px;font-size:.7rem;border-bottom:0;border-top:2px solid transparent;margin:0;position:relative}
+  nav.tabs button[aria-current="page"]{border-color:var(--red)}
+  nav.tabs .hz{font-size:1.15rem;line-height:1.3}
+  nav.tabs .badge{position:absolute;top:2px;right:2px}
+}
+
+/* generic */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:8px 14px;font-weight:600;font-size:.9rem}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--red);border-color:var(--red);color:var(--red-ink)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--muted)}
+.btn.ghost:hover{color:var(--ink)}
+.btn.danger{color:var(--red);border-color:var(--red)}
+.btn:disabled{opacity:.5;cursor:default}
+.icon-btn{border:1px solid var(--line);background:var(--surface);border-radius:50%;width:34px;height:34px;display:inline-grid;place-items:center;flex:none}
+.icon-btn svg{width:16px;height:16px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:5px 12px;font-size:.85rem}
+.chip:hover{border-color:var(--red);color:var(--red)}
+.note{font-size:.85rem;color:var(--muted)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:9px;font-size:.88rem;z-index:20;max-width:calc(100% - 32px)}
+.thinking{color:var(--muted);font-style:italic}
+
+/* today */
+.today-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.today-head .hz.big{font-size:1.9rem;font-weight:700}
+.grid2{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px}
+@media (max-width:720px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.tutor-note{display:flex;gap:14px;align-items:flex-start}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--red);color:var(--gold-soft);box-shadow:0 0 0 2px var(--gold-line);display:grid;place-items:center;font-family:var(--f-hz);font-weight:700;flex:none}
+.tutor-note .body{min-width:0;flex:1}
+#ci-text{white-space:pre-wrap}
+.plan{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.plan li{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:12px;align-items:center;padding-block:12px;border-top:1px solid var(--line)}
+.plan li:first-child{border-top:0;padding-top:4px}
+.tick{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center}
+.tick.done{background:var(--red);border-color:var(--red);color:var(--red-ink)}
+.tick svg{width:12px;height:12px}
+.plan .meta{font-size:.82rem;color:var(--muted)}
+.streak{display:flex;align-items:center;gap:14px}
+.streak .num{font-family:var(--f-hz);font-size:2.6rem;font-weight:700;color:var(--red);line-height:1;font-variant-numeric:tabular-nums}
+.strip{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:4px;margin-top:12px}
+.strip div{aspect-ratio:1;border-radius:4px;background:var(--heat0);max-width:100%}
+.strip div.on{background:var(--red)}
+.strip div.today{box-shadow:0 0 0 2px var(--gold)}
+.wotd{text-align:center}
+.wotd .hz{font-size:3.2rem;font-weight:700;line-height:1.2}
+.wotd .py{font-size:1.2rem;font-weight:600}
+
+/* review */
+.card{min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:28px 18px}
+.card .front{font-size:clamp(3.5rem,14vw,5.5rem);font-weight:700;line-height:1.15}
+.card .front.en{font-family:var(--f-ui);font-size:1.7rem;font-weight:600}
+.card .py{font-size:1.5rem;font-weight:600}
+.card .mean{font-size:1.1rem}
+.newtag{background:var(--gold-soft);color:var(--gold);font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:99px;padding:2px 10px}
+.example{background:var(--sunk);border-radius:9px;padding:10px 14px;white-space:pre-wrap;text-align:left;max-width:100%;font-size:.95rem}
+.grades{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.grades button{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:10px 4px;font-weight:600;display:flex;flex-direction:column;align-items:center}
+.grades button small{font-weight:500;color:var(--muted);font-size:.75rem;font-variant-numeric:tabular-nums}
+.grades button.g0{color:var(--gold)}
+.grades button.g2{border-color:var(--red);color:var(--red)}
+.progressbar{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.progressbar span{display:block;height:100%;background:var(--red)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;font-size:.85rem;font-weight:600}
+kbd{font-family:ui-monospace,Menlo,monospace;font-size:.75rem;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 4px;color:var(--muted)}
+
+/* tutor */
+.chat{display:flex;flex-direction:column;gap:12px;min-height:200px}
+.msg{max-width:88%;border-radius:14px;padding:10px 14px;min-width:0;overflow-wrap:anywhere}
+.msg.user{align-self:flex-end;background:var(--red);color:var(--red-ink);border-bottom-right-radius:4px;white-space:pre-wrap}
+.msg.bot{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:4px;display:flex;flex-direction:column;gap:3px}
+.msg.bot .zh{font-family:var(--f-hz);font-size:1.2rem;font-weight:500}
+.msg.bot .pyl{color:var(--muted);font-size:.9rem}
+.msg.bot .enl{font-size:.9rem}
+.msg.bot .corr{background:var(--gold-soft);color:var(--gold);border-radius:8px;padding:6px 10px;font-size:.88rem;margin-bottom:4px}
+.msg.bot .nice{background:var(--ok-soft);color:var(--ok);border-radius:8px;padding:6px 10px;font-size:.88rem;margin-bottom:4px}
+.msg.bot .plain{white-space:pre-wrap}
+.msg.bot .tools{display:flex;justify-content:flex-end}
+.composer{display:flex;gap:8px;align-items:flex-end;margin-top:14px}
+.composer textarea{flex:1;min-width:0;resize:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:10px 12px;font:inherit;min-height:46px;max-height:140px}
+.summary{border-left:3px solid var(--gold-line);background:var(--gold-soft);border-radius:0 10px 10px 0;padding:12px 14px}
+
+/* lessons */
+.lesson-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.lesson-item{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:14px;display:flex;gap:12px;align-items:flex-start}
+.lesson-item:hover{border-color:var(--red)}
+.lesson-item .key{font-family:var(--f-hz);font-size:1.6rem;font-weight:700;color:var(--red);min-width:2.2em;line-height:1.2}
+.lesson-item .info{min-width:0;display:flex;flex-direction:column;gap:2px}
+.lesson-item .st{font-size:.78rem;color:var(--muted)}
+.lesson-item .st.done{color:var(--red);font-weight:600}
+.lesson-item.next{border-color:var(--gold)}
+.pattern{font-family:var(--f-hz);font-size:1.15rem;background:var(--sunk);border-radius:9px;padding:10px 14px;overflow-x:auto}
+.ex-list{display:flex;flex-direction:column;gap:10px}
+.ex{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;border-top:1px solid var(--line);padding-top:10px}
+.ex:first-child{border-top:0;padding-top:0}
+.ex .zh{font-family:var(--f-hz);font-size:1.15rem}
+.ex .sub{font-size:.88rem;color:var(--muted);grid-column:1}
+.quiz-q{display:flex;flex-direction:column;gap:8px;padding-block:12px;border-top:1px solid var(--line)}
+.quiz-q:first-child{border-top:0}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media (max-width:520px){.opts{grid-template-columns:minmax(0,1fr)}}
+.opt{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:8px 12px;font-family:var(--f-ui),var(--f-hz)}
+.opt.picked{border-color:var(--red);background:var(--red-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:600}
+.opt.wrong{border-color:var(--muted);background:var(--sunk);color:var(--muted);text-decoration:line-through}
+
+/* progress */
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:640px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.tile b{display:block;font-size:1.7rem;font-variant-numeric:tabular-nums;line-height:1.2}
+.heat-wrap{overflow-x:auto}
+.heat{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,14px);gap:3px;width:max-content}
+.heat div{width:14px;height:14px;border-radius:3px;background:var(--heat0)}
+.heat .h1{background:var(--heat1)}.heat .h2{background:var(--heat2)}.heat .h3{background:var(--heat3)}.heat .h4{background:var(--heat4)}
+.heat .fut{background:transparent}
+.bar{display:flex;height:14px;border-radius:99px;overflow:hidden;background:var(--sunk)}
+.bar span{display:block;height:100%}
+.keys{display:flex;gap:14px;flex-wrap:wrap;font-size:.82rem;color:var(--muted)}
+.keys i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.weak{display:flex;flex-wrap:wrap;gap:8px}
+.weak span{background:var(--gold-soft);color:var(--gold);border-radius:99px;padding:4px 6px 4px 12px;font-size:.85rem;display:inline-flex;align-items:center;gap:4px}
+.weak button{border:0;background:none;color:inherit;padding:0 4px;font-size:1rem;line-height:1}
+select{font:inherit;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:6px 10px}
+.set-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px;border-top:1px solid var(--line)}
+.set-row:first-of-type{border-top:0}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.85em;background:var(--sunk);border-radius:4px;padding:1px 4px;overflow-wrap:anywhere}
+#chat-off a{color:var(--red);font-weight:600}
+.seg{flex-wrap:wrap}
+input[type=text],input[type=search],input[type=password]{font:inherit;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 10px;min-width:0}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{border:0;background:var(--surface);padding:6px 12px;font-size:.85rem;font-weight:600;color:var(--muted)}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--red);color:var(--red-ink)}
+@media (hover:none){.kbd-hint{display:none}}
+
+/* listening card */
+.listen-btn{width:96px;height:96px;border-radius:50%;border:2px solid var(--red);background:var(--red-soft);color:var(--red);display:grid;place-items:center}
+.listen-btn svg{width:40px;height:40px}
+.listen-btn:hover{background:var(--red);color:var(--red-ink)}
+.ex-sent{display:flex;gap:10px;align-items:flex-start;width:100%;max-width:520px}
+.ex-sent .example{flex:1}
+
+/* tutor: hidden pinyin / English */
+.chat.quiet .msg.bot .pyl,.chat.quiet .msg.bot .enl{filter:blur(5px);cursor:pointer;user-select:none;transition:filter .15s}
+.chat.quiet .msg.bot .shown{filter:none;user-select:auto}
+
+/* word list */
+.wl-tools{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.wl{display:flex;flex-direction:column;max-height:420px;overflow-y:auto;margin-inline:-6px}
+.wl-row{display:grid;grid-template-columns:minmax(4.5em,auto) minmax(0,1fr) auto auto;gap:4px 12px;align-items:center;padding:8px 6px;border-top:1px solid var(--line)}
+.wl-row:first-child{border-top:0}
+.wl-row .h{font-family:var(--f-hz);font-size:1.25rem;font-weight:700}
+.wl-row .d{min-width:0}
+.wl-row .d small{display:block;color:var(--muted);font-size:.82rem;overflow-wrap:anywhere}
+.stg{font-size:.72rem;font-weight:700;border-radius:99px;padding:1px 8px;white-space:nowrap;background:var(--sunk);color:var(--muted)}
+.stg.learning{background:var(--gold-soft);color:var(--gold)}
+.stg.known{background:var(--red-soft);color:var(--red)}
+.stg.mastered{background:var(--red);color:var(--red-ink)}
+.addw{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:8px}
+@media (max-width:560px){.addw{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.addw input:last-of-type{grid-column:1/-1}.addw button{grid-column:1/-1}}
+@media (prefers-reduced-motion:no-preference){.card,.msg{animation:rise .25s ease-out}}
+@keyframes rise{from{transform:translateY(4px)}to{transform:none}}
+</style>
+</head><body>
+<div class="wrap">
+  <header class="top">
+    <div class="seal" aria-hidden="true">师</div>
+    <div class="brand"><b>Lǎoshī 老师</b><span>Your Mandarin study partner · HSK 1–2</span></div>
+    <div class="sync" id="sync"><i></i><span>Loading…</span></div>
+  </header>
+  <nav class="tabs" id="tabs">
+    <button data-act="nav" data-v="today" aria-current="page"><span class="hz">今</span>Today</button>
+    <button data-act="nav" data-v="review"><span class="hz">卡</span>Review<span class="badge" id="due-badge" hidden></span></button>
+    <button data-act="nav" data-v="tutor"><span class="hz">说</span>Tutor</button>
+    <button data-act="nav" data-v="lessons"><span class="hz">课</span>Lessons</button>
+    <button data-act="nav" data-v="progress"><span class="hz">进</span>Progress</button>
+  </nav>
+
+  <main>
+    <section id="v-today" class="stack"></section>
+    <section id="v-review" class="stack" hidden></section>
+    <section id="v-tutor" class="stack" hidden>
+      <div class="row" style="justify-content:space-between">
+        <div><h2>Conversation practice</h2><p class="note">Write in characters, pinyin or English. Lǎoshī corrects you as you go.</p></div>
+        <div class="row">
+          <button class="btn ghost" data-act="quiet" id="quiet-btn" aria-pressed="false">Hide pinyin</button>
+          <button class="btn" data-act="wrap" id="wrap-btn">Wrap up session</button>
+          <button class="btn ghost" data-act="newchat">New conversation</button>
+        </div>
+      </div>
+      <div class="row" id="scenarios"></div>
+      <div class="chat" id="chat"></div>
+      <div id="chat-off" class="panel note" hidden>Conversation practice needs an AI model. Connect one in <a href="#progress" data-act="nav" data-v="progress">Progress → AI tutor</a>.</div>
+      <form class="composer" id="composer">
+        <textarea id="chat-input" rows="1" placeholder="你好！ / nǐ hǎo / How do I say…"></textarea>
+        <button class="btn primary" type="submit" id="send-btn">Send</button>
+      </form>
+    </section>
+    <section id="v-lessons" class="stack" hidden></section>
+    <section id="v-progress" class="stack" hidden></section>
+  </main>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ---------- content ---------- */
+const VOCAB_RAW = `你好|nǐ hǎo|hello
+我|wǒ|I, me
+你|nǐ|you
+是|shì|to be (am, is, are)
+不|bù|not, no
+谢谢|xiè xie|thank you
+不客气|bú kè qi|you're welcome
+再见|zài jiàn|goodbye
+好|hǎo|good, well
+很|hěn|very
+吗|ma|question particle (yes/no)
+他|tā|he, him
+她|tā|she, her
+我们|wǒ men|we, us
+叫|jiào|to be called
+什么|shén me|what
+名字|míng zi|name
+人|rén|person
+中国|Zhōng guó|China
+汉语|Hàn yǔ|Chinese language
+对不起|duì bu qǐ|sorry
+没关系|méi guān xi|it doesn't matter
+一|yī|one
+二|èr|two
+三|sān|three
+四|sì|four
+五|wǔ|five
+六|liù|six
+七|qī|seven
+八|bā|eight
+九|jiǔ|nine
+十|shí|ten
+的|de|possessive particle ('s)
+呢|ne|particle: "and you?"
+谁|shéi|who
+哪儿|nǎ r|where
+这|zhè|this
+那|nà|that
+哪|nǎ|which
+个|gè|general measure word
+有|yǒu|to have; there is
+没有|méi yǒu|not have; did not
+在|zài|at, in; to be located
+家|jiā|home, family
+爸爸|bà ba|dad
+妈妈|mā ma|mom
+儿子|ér zi|son
+女儿|nǚ ér|daughter
+朋友|péng you|friend
+老师|lǎo shī|teacher
+学生|xué sheng|student
+同学|tóng xué|classmate
+医生|yī shēng|doctor
+先生|xiān sheng|Mr.; sir
+小姐|xiǎo jiě|Miss
+爱|ài|to love
+喜欢|xǐ huan|to like
+想|xiǎng|to want; to think; to miss
+吃|chī|to eat
+喝|hē|to drink
+茶|chá|tea
+水|shuǐ|water
+米饭|mǐ fàn|cooked rice
+菜|cài|dish; vegetable
+苹果|píng guǒ|apple
+水果|shuǐ guǒ|fruit
+杯子|bēi zi|cup, glass
+饭店|fàn diàn|restaurant; hotel
+请|qǐng|please; to invite
+去|qù|to go
+来|lái|to come
+回|huí|to return
+看|kàn|to look, to watch
+看见|kàn jiàn|to see
+听|tīng|to listen
+说|shuō|to speak, to say
+读|dú|to read
+写|xiě|to write
+字|zì|character, word
+书|shū|book
+本|běn|measure word for books
+学习|xué xí|to study
+学校|xué xiào|school
+工作|gōng zuò|to work; job
+做|zuò|to do, to make
+会|huì|can, know how to
+能|néng|can, be able to
+买|mǎi|to buy
+钱|qián|money
+块|kuài|yuan (spoken unit of money)
+多少|duō shao|how many, how much
+几|jǐ|how many (small numbers)
+多|duō|many, much
+少|shǎo|few, little
+大|dà|big
+小|xiǎo|small
+太|tài|too, extremely
+都|dōu|all, both
+和|hé|and; with
+些|xiē|some
+一点儿|yì diǎn r|a little
+今天|jīn tiān|today
+明天|míng tiān|tomorrow
+昨天|zuó tiān|yesterday
+现在|xiàn zài|now
+时候|shí hou|time, moment
+点|diǎn|o'clock
+分钟|fēn zhōng|minute
+上午|shàng wǔ|morning
+中午|zhōng wǔ|noon
+下午|xià wǔ|afternoon
+年|nián|year
+月|yuè|month; moon
+号|hào|day of the month; number
+星期|xīng qī|week
+岁|suì|years old
+天气|tiān qì|weather
+冷|lěng|cold
+热|rè|hot
+下雨|xià yǔ|to rain
+高兴|gāo xìng|happy, glad
+漂亮|piào liang|pretty
+认识|rèn shi|to know (a person)
+怎么|zěn me|how
+怎么样|zěn me yàng|how about; how is it
+了|le|particle: completed action / change
+上|shàng|up; on; previous
+下|xià|down; below; next
+里|lǐ|inside
+前面|qián miàn|in front
+后面|hòu miàn|behind
+住|zhù|to live, to stay
+坐|zuò|to sit; to take (transport)
+开|kāi|to open; to drive
+出租车|chū zū chē|taxi
+飞机|fēi jī|airplane
+商店|shāng diàn|shop, store
+医院|yī yuàn|hospital
+北京|Běi jīng|Beijing
+东西|dōng xi|thing, stuff
+衣服|yī fu|clothes
+桌子|zhuō zi|table, desk
+椅子|yǐ zi|chair
+电脑|diàn nǎo|computer
+电视|diàn shì|television
+电影|diàn yǐng|movie
+打电话|dǎ diàn huà|to make a phone call
+喂|wèi|hello (on the phone)
+睡觉|shuì jiào|to sleep
+狗|gǒu|dog
+猫|māo|cat`;
+const VOCAB = VOCAB_RAW.split("\n").map(l=>{const [h,p,e]=l.split("|");return {h,p,e};});
+const VMAP = Object.fromEntries(VOCAB.map(w=>[w.h,w]));
+
+const LESSONS = [
+ {id:"shi",key:"是",title:"Saying \"A is B\" with 是",hint:"Subject + 是 + noun; 不是 for negation"},
+ {id:"ma",key:"吗",title:"Yes/no questions with 吗",hint:"add 吗 to the end of a statement"},
+ {id:"bu",key:"不",title:"Negation with 不",hint:"不 before verbs and adjectives; tone change bù → bú before 4th tone"},
+ {id:"hen",key:"很",title:"Describing things: 很 + adjective",hint:"adjectives as predicates without 是"},
+ {id:"de",key:"的",title:"Possession with 的",hint:"我的, 老师的书, dropping 的 with family/close relations"},
+ {id:"ne",key:"呢",title:"\"And you?\" with 呢",hint:"follow-up questions like 你呢？"},
+ {id:"qw",key:"谁",title:"Question words: 什么, 谁, 哪儿",hint:"question word stays where the answer goes"},
+ {id:"ge",key:"个",title:"Numbers and the measure word 个",hint:"number + measure word + noun; 两 vs 二"},
+ {id:"ji",key:"几",title:"Asking quantities: 几 and 多少",hint:"几 for small expected numbers, 多少 for any amount and prices"},
+ {id:"zai",key:"在",title:"Where things are: 在",hint:"Subject + 在 + place; 在 + place + verb"},
+ {id:"you",key:"有",title:"Having and existence: 有 / 没有",hint:"没有 not 不有; place + 有 + thing"},
+ {id:"xiang",key:"想",title:"Wanting: 想 and 要",hint:"想 + verb (would like), 要 + noun/verb (want, will)"},
+ {id:"hui",key:"会",title:"Ability: 会 and 能",hint:"会 for learned skills, 能 for possibility/permission"},
+ {id:"time",key:"点",title:"Time words and telling the time",hint:"time words go before the verb; 几点, 点, 分"},
+ {id:"date",key:"号",title:"Dates and days of the week",hint:"年 月 号 order, 星期一 to 星期天"},
+ {id:"le",key:"了",title:"Completed actions with 了",hint:"verb + 了 for completion; 没 + verb for negation (no 了)"},
+ {id:"tai",key:"太",title:"\"Too…!\" with 太…了",hint:"太 + adjective + 了 for exclamation/excess"},
+ {id:"dou",key:"都",title:"\"Also\" and \"all\": 也 and 都",hint:"both go before the verb; 也都 order"}
+];
+
+const SCENARIOS = [
+ ["Introduce yourself","Meeting someone for the first time: names, where you're from, what you do."],
+ ["Order at a café","Ordering drinks and food at a café in Beijing, asking prices."],
+ ["Talk about family","Talking about family members, how many people, ages."],
+ ["Make weekend plans","Talking about what to do tomorrow or this weekend, times and places."],
+ ["Go shopping","Buying clothes or fruit at a shop, asking how much, numbers and money."],
+ ["Free chat","Any simple everyday topic the tutor chooses, adapting to the learner."]
+];
+
+/* ---------- helpers ---------- */
+const $ = s=>document.querySelector(s);
+const esc = s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const clone = o=>JSON.parse(JSON.stringify(o));
+const today = ()=>{const d=new Date();return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/864e5);};
+const dk = n=>new Date(n*864e5).toISOString().slice(0,10);
+const T1="āēīōūǖĀĒĪŌŪǕ",T2="áéíóúǘÁÉÍÓÚǗ",T3="ǎěǐǒǔǚǍĚǏǑǓǙ",T4="àèìòùǜÀÈÌÒÙǛ";
+function tone(s){for(const c of s){if(T1.includes(c))return 1;if(T2.includes(c))return 2;if(T3.includes(c))return 3;if(T4.includes(c))return 4;}return 5;}
+const syls = p=>String(p||"").trim().split(/\s+/).filter(Boolean);
+const pyHTML = p=>syls(p).map(s=>`<span class="t${tone(s)}">${esc(s)}</span>`).join("");
+function hzHTML(h,p){const c=[...h],s=syls(p);if(c.length!==s.length)return esc(h);return c.map((ch,i)=>`<span class="t${tone(s[i])}">${esc(ch)}</span>`).join("");}
+const ICON = {
+ speak:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>`,
+ undo:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg>`,
+ check:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>`
+};
+const canSpeak = "speechSynthesis" in window;
+function speak(t){if(!canSpeak||!t)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="zh-CN";u.rate=.8;speechSynthesis.speak(u);}catch{}}
+const spk = t=>canSpeak?`<button class="icon-btn" data-act="speak" data-t="${esc(t)}" aria-label="Listen" title="Listen">${ICON.speak}</button>`:"";
+let toastT;function toast(m){const t=$("#toast");t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3200);}
+function sampleErr(e){return ({not_granted:"Claude access wasn't allowed for this page.",rate_limited:"Too many requests right now. Try again in a minute.",session_expired:"Please sign in to claude.ai again.",sampling_disabled:"Claude isn't available on this account.",refused:"Claude couldn't answer that. Try rephrasing.",invalid_json:"The answer came back garbled. Try again.",prompt_too_large:"That was too long. Try a shorter message.",bad_key:"The API key was rejected. Check it in Progress → AI tutor.",bad_model:"That model wasn't found. Check the model name in Progress → AI tutor.",no_ollama:"Couldn't reach Ollama. Is it running, with OLLAMA_ORIGINS set?",network:"Couldn't reach the AI model. Try again."})[e?.code]||"Couldn't reach the AI model. Try again.";}
+
+/* ---------- AI provider (standalone mode) ----------
+   On claude.ai the page uses window.claude. Anywhere else (GitHub Pages, a local file)
+   it talks to a model the learner configures: their own Anthropic API key, or a local
+   Ollama server. The config lives only in this browser's localStorage and never syncs. */
+const AI_LS="laoshi-ai";
+const AI_DEF={provider:"none",key:"",model:"",url:"http://localhost:11434"};
+const AI_MODELS={anthropic:"claude-haiku-5-5",ollama:"qwen2.5:7b"};
+let AI=(()=>{try{return {...AI_DEF,...JSON.parse(localStorage.getItem(AI_LS)||"{}")};}catch{return {...AI_DEF};}})();
+let onClaude=false,aiStatus="";
+function saveAI(){try{localStorage.setItem(AI_LS,JSON.stringify(AI));}catch{}}
+const aiErr=(code,text)=>Object.assign(new Error(code),{code,text});
+function toMessages(input){
+  const raw=typeof input==="string"?[{role:"user",content:input}]:input;
+  const out=[];for(const m of raw){const last=out[out.length-1];if(last&&last.role===m.role)last.content+="\n\n"+m.content;else out.push({role:m.role,content:m.content});}
+  return out;
+}
+async function readLines(res,onLine,signal){
+  const rd=res.body.getReader(),dec=new TextDecoder();let buf="";
+  while(true){
+    if(signal?.aborted)throw aiErr("cancelled");
+    const {done,value}=await rd.read();if(done)break;
+    buf+=dec.decode(value,{stream:true});let i;
+    while((i=buf.indexOf("\n"))>=0){const line=buf.slice(0,i).trim();buf=buf.slice(i+1);if(line)onLine(line);}
+  }
+  if(buf.trim())onLine(buf.trim());
+}
+async function callModel(input,opts={},json=false){
+  const messages=toMessages(input),model=AI.model||AI_MODELS[AI.provider];let text="";
+  const emit=t=>{text+=t;opts.onText?.({text});};
+  try{
+    if(AI.provider==="anthropic"){
+      if(!AI.key)throw aiErr("bad_key");
+      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",signal:opts.signal,
+        headers:{"content-type":"application/json","x-api-key":AI.key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+        body:JSON.stringify({model,max_tokens:2000,messages,stream:true})});
+      if(!res.ok)throw aiErr(res.status===401||res.status===403?"bad_key":res.status===429?"rate_limited":res.status===404?"bad_model":res.status===413?"prompt_too_large":"network");
+      await readLines(res,line=>{if(!line.startsWith("data:"))return;try{const ev=JSON.parse(line.slice(5));if(ev.type==="content_block_delta"&&ev.delta?.text)emit(ev.delta.text);else if(ev.type==="error")throw aiErr("network");}catch(e){if(e.code)throw e;}},opts.signal);
+    }else if(AI.provider==="ollama"){
+      const res=await fetch(AI.url.replace(/\/+$/,"")+"/api/chat",{method:"POST",signal:opts.signal,headers:{"content-type":"application/json"},
+        body:JSON.stringify({model,messages,stream:true,...(json?{format:"json"}:{})})});
+      if(!res.ok)throw aiErr(res.status===404?"bad_model":"network");
+      await readLines(res,line=>{try{const ev=JSON.parse(line);if(ev.message?.content)emit(ev.message.content);}catch{}},opts.signal);
+    }else throw aiErr("sampling_disabled");
+  }catch(e){
+    if(e.name==="AbortError"||e.code==="cancelled")throw aiErr("cancelled",text);
+    if(e.code)throw Object.assign(e,{text});
+    throw aiErr(AI.provider==="ollama"?"no_ollama":"network",text);
+  }
+  return {text};
+}
+function makeSampler(){
+  if(AI.provider==="none"||(AI.provider==="anthropic"&&!AI.key))return null;
+  const s=(input,opts)=>callModel(input,opts);
+  s.json=async(prompt,opts)=>{
+    const {text}=await callModel(prompt+"\n\nRespond with the JSON object only: no code fences, no commentary.",opts,true);
+    const a=text.indexOf("{"),b=text.lastIndexOf("}");
+    try{return JSON.parse(text.slice(a,b+1));}catch{throw aiErr("invalid_json");}
+  };
+  return s;
+}
+function aiSettingsHTML(){
+  if(onClaude)return "";
+  const p=AI.provider;
+  return `<div class="panel stack" id="ai-panel"><div><h3>AI tutor</h3><p class="note">Conversation practice, lessons and check-ins need a language model. Pick one below. Your settings stay in this browser and are never uploaded anywhere except to the provider you choose.</p></div>
+    <div class="seg" role="group" aria-label="AI provider">${[["none","Off"],["anthropic","Anthropic API"],["ollama","Ollama (local)"]].map(([v,l])=>`<button data-act="aiprov" data-v="${v}" aria-pressed="${p===v}">${l}</button>`).join("")}</div>
+    ${p==="anthropic"?`<label class="stack" style="gap:4px"><b>API key</b><input type="password" id="ai-key" value="${esc(AI.key)}" placeholder="sk-ant-…" autocomplete="off"><span class="note">Create one at console.anthropic.com. It's sent only to api.anthropic.com. Usage is billed to your account.</span></label>`:""}
+    ${p==="ollama"?`<label class="stack" style="gap:4px"><b>Server URL</b><input type="text" id="ai-url" value="${esc(AI.url)}"><span class="note">Run <code>ollama pull ${esc(AI_MODELS.ollama)}</code>. If this page isn't on localhost, start Ollama with <code>OLLAMA_ORIGINS="${esc(location.origin)}"</code> so the browser is allowed to reach it.</span></label>`:""}
+    ${p!=="none"?`<label class="stack" style="gap:4px"><b>Model</b><input type="text" id="ai-model" value="${esc(AI.model)}" placeholder="${esc(AI_MODELS[p])}"></label>
+    <div class="row"><button class="btn primary" data-act="aisave">Save</button><button class="btn" data-act="aitest">Test connection</button><span class="note" id="ai-status">${esc(aiStatus||(sample?"Saved · not tested yet":"Not connected"))}</span></div>`:""}
+  </div>`;
+}
+
+/* ---------- state & storage ---------- */
+const DEF = {
+ state:{settings:{newPerDay:8,front:"hanzi",autoplay:true,theme:"system"},history:{},weak:[],notes:"",checkin:null},
+ deck:{cards:{},ex:{}},
+ chat:{msgs:[],scenario:null,summary:null},
+ lessons:{items:{}}
+};
+const NAMES = Object.keys(DEF);
+const S = clone(DEF);
+let db=null, uid=null, sample=null, refs={}, dirty={}, timers={}, chains={}, readOnly=false, cloudReady=false;
+const LS = "laoshi-v1";
+function mergeDef(name,data){const d=clone(DEF[name]);for(const k in data)d[k]=data[k];if(name==="state")d.settings={...DEF.state.settings,...(data.settings||{})};return d;}
+function loadLocal(){try{const raw=localStorage.getItem(LS);if(raw){const o=JSON.parse(raw);for(const n of NAMES)if(o[n])S[n]=mergeDef(n,o[n]);}}catch{}}
+function saveLocal(){try{localStorage.setItem(LS,JSON.stringify(S));}catch{}}
+function save(name){
+  saveLocal();
+  if(!db||readOnly)return;
+  dirty[name]=true;clearTimeout(timers[name]);
+  timers[name]=setTimeout(()=>{
+    const body=clone(S[name]);
+    chains[name]=(chains[name]||Promise.resolve()).then(()=>refs[name].set(body)).then(()=>{dirty[name]=false;}).catch(e=>{
+      dirty[name]=false;
+      if(e?.code==="invalid_argument"){readOnly=true;setSync();toast("This page is read-only for you. Progress stays in this browser.");}
+      else if(e?.code==="quota_exceeded")toast("Storage is full. Clear old chat or reset some data.");
+      else toast("Couldn't sync just now. Your progress is kept in this browser.");
+    });
+  },500);
+}
+function setSync(){const el=$("#sync");const on=db&&!readOnly;el.className="sync"+(on?" on":"");el.lastElementChild.textContent=on?"Synced to your account":(cloudReady?"Saved in this browser only":"Loading…");}
+
+async function boot(){
+  loadLocal();render();
+  const hasC = typeof window.claude!=="undefined" && window.claude?.use;
+  if(!hasC){sample=makeSampler();cloudReady=true;setSync();render();return;}
+  onClaude=true;
+  claude.use("sample").then(s=>{sample=s;render();}).catch(()=>{});
+  try{
+    const [d,u]=await Promise.all([claude.use("db"),claude.use("user")]);
+    if(d&&u){const id=await u.id();if(id){db=d;uid=id;}}
+  }catch{}
+  cloudReady=true;setSync();
+  if(!db){render();return;}
+  const local=clone(S);
+  for(const n of NAMES){
+    refs[n]=db.doc(`data/users/${uid}/${n}`);
+    let first=true;
+    refs[n].onSnapshot(snap=>{
+      if(snap.metadata.hasPendingWrites||dirty[n])return;
+      if(snap.exists){S[n]=mergeDef(n,clone(snap.data()));saveLocal();}
+      else if(first&&JSON.stringify(local[n])!==JSON.stringify(DEF[n])){S[n]=local[n];save(n);}
+      first=false;render();
+    },()=>{});
+  }
+}
+
+/* ---------- derived ---------- */
+const H = k=>S.state.history[k]||{r:0,c:0,n:0,m:0,l:0};
+function log(f,n=1){const k=dk(today());const h=S.state.history[k]||(S.state.history[k]={r:0,c:0,n:0,m:0,l:0});h[f]=(h[f]||0)+n;save("state");}
+const active = k=>{const h=S.state.history[k];return !!h&&(h.r+h.m+h.l+h.n)>0;};
+function streak(){let t=today();if(!active(dk(t)))t--;let n=0;while(active(dk(t))){n++;t--;}return n;}
+const cards = ()=>Object.values(S.deck.cards);
+const dueCards = ()=>cards().filter(c=>c.due<=today()).sort((a,b)=>a.due-b.due);
+const unseen = ()=>VOCAB.filter(w=>!S.deck.cards[w.h]);
+const newLeft = ()=>Math.max(0,Math.min(S.state.settings.newPerDay-H(dk(today())).n,unseen().length));
+function stage(c){if(!c.reps)return"new";if(c.ivl>=21)return"mastered";if(c.ivl>=7)return"known";return"learning";}
+const nextLesson = ()=>LESSONS.find(l=>!S.lessons.items[l.id]?.done)||LESSONS[0];
+function addWord(w,src){if(!w?.h||S.deck.cards[w.h])return false;S.deck.cards[w.h]={h:w.h,p:w.p||"",e:w.e||"",ivl:0,ease:2.5,reps:0,lapses:0,due:today(),added:today(),src};return true;}
+function schedule(c,g){
+  const t=today();c={...c};
+  if(g===0){c.lapses=(c.lapses||0)+1;c.ease=Math.max(1.3,c.ease-.2);c.ivl=0;c.due=t;}
+  else{
+    let ivl;
+    if(!c.ivl)ivl=[0,1,1,3][g];
+    else if(g===1)ivl=Math.max(c.ivl+1,Math.round(c.ivl*1.2));
+    else if(g===2)ivl=Math.max(c.ivl+1,Math.round(c.ivl*c.ease));
+    else ivl=Math.max(c.ivl+2,Math.round(c.ivl*c.ease*1.3));
+    if(g===1)c.ease=Math.max(1.3,c.ease-.15);if(g===3)c.ease+=.15;
+    c.ivl=ivl;c.due=t+ivl;c.reps=(c.reps||0)+1;
+  }
+  c.last=t;return c;
+}
+const ivlLabel = n=>n<1?"again today":n===1?"1 day":n<30?n+" days":Math.round(n/30)+" mo";
+
+/* ---------- views ---------- */
+let view="today";
+function applyTheme(){const t=S.state.settings.theme;if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;else delete document.documentElement.dataset.theme;}
+function render(){
+  applyTheme();
+  const due=dueCards().length+newLeft();
+  const b=$("#due-badge");b.hidden=!due;b.textContent=due;
+  ({today:rToday,review:rReview,tutor:rTutor,lessons:rLessons,progress:rProgress})[view]();
+  setSync();
+}
+function go(v){
+  view=v;
+  for(const s of document.querySelectorAll("main>section"))s.hidden=s.id!=="v-"+v;
+  for(const b of document.querySelectorAll("#tabs button"))b.dataset.v===v?b.setAttribute("aria-current","page"):b.removeAttribute("aria-current");
+  if(v==="review"&&!rev.active)startReview();
+  render();window.scrollTo(0,0);
+}
+
+/* today */
+let checkBusy=false;
+function cnDate(){const d=new Date();return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 · 星期${"日一二三四五六"[d.getDay()]}`;}
+function greet(){const h=new Date().getHours();return h<11?["早上好","zǎo shang hǎo","Good morning"]:h<14?["中午好","zhōng wǔ hǎo","Good afternoon"]:h<18?["下午好","xià wǔ hǎo","Good afternoon"]:["晚上好","wǎn shang hǎo","Good evening"];}
+function localNote(){
+  const due=dueCards().length,nl=newLeft(),st=streak(),total=cards().length;
+  if(!total)return "欢迎！Welcome. Start with your first "+S.state.settings.newPerDay+" words in Review, then try the first grammar lesson on 是. When you're ready, say 你好 to me in Tutor.";
+  const y=H(dk(today()-1));let s="";
+  if(st>1)s+=`${st} days in a row. 很好！ `;else if(!active(dk(today()-1)))s+="We missed you yesterday. Let's get back on track. ";
+  else s+=`Yesterday you did ${y.r} reviews. `;
+  s+=`Today you have ${due} card${due===1?"":"s"} due and ${nl} new word${nl===1?"":"s"} waiting.`;
+  if(S.state.weak.length)s+=` Keep an eye on: ${S.state.weak[0]}.`;
+  return s;
+}
+function rToday(){
+  const k=dk(today()),h=H(k),due=dueCards().length,nl=newLeft(),goal=S.state.settings.newPerDay,nx=nextLesson(),g=greet(),st=streak();
+  const ci=S.state.checkin&&S.state.checkin.day===k?S.state.checkin.text:null;
+  const plan=[
+    {done:due===0&&(h.r>0||cards().length>0),t:"Review due cards",m:due?`${due} due now`:"All caught up",a:due?`<button class="btn primary" data-act="nav" data-v="review">Review</button>`:""},
+    {done:h.n>=goal||(!unseen().length),t:"Learn new words",m:`${Math.min(h.n,goal)} of ${goal} today`,a:nl?`<button class="btn" data-act="nav" data-v="review">Learn</button>`:""},
+    {done:h.l>0,t:"Grammar lesson",m:h.l?"Done today":`Next: ${nx.title}`,a:h.l?"":`<button class="btn" data-act="lesson" data-id="${nx.id}">Open</button>`},
+    {done:h.m>=5,t:"Speak with Lǎoshī",m:`${Math.min(h.m,5)} of 5 messages`,a:h.m>=5?"":`<button class="btn" data-act="nav" data-v="tutor">Chat</button>`}
+  ];
+  const w=unseen()[0]||cards().sort((a,b)=>(a.last||0)-(b.last||0))[0]||VOCAB[0];
+  let strip="";for(let i=13;i>=0;i--){const kk=dk(today()-i);strip+=`<div class="${active(kk)?"on":""}${i===0?" today":""}" title="${kk}"></div>`;}
+  $("#v-today").innerHTML=`
+  <div class="today-head">
+    <div><p class="label">${esc(cnDate())}</p><h1 class="hz big">${hzHTML(g[0],g[1])}</h1><p class="muted">${esc(g[1])} · ${esc(g[2])}</p></div>
+  </div>
+  <div class="panel tutor-note">
+    <div class="avatar">师</div>
+    <div class="body">
+      <p class="label" style="margin-bottom:4px">Lǎoshī's check-in</p>
+      <p id="ci-text">${esc(ci||localNote())}</p>
+      <div class="row" style="margin-top:10px">
+        ${sample?`<button class="btn ${ci?"ghost":"primary"}" data-act="checkin" ${checkBusy?"disabled":""}>${checkBusy?"Thinking…":ci?"Refresh check-in":"Get today's personal check-in"}</button>`:`<span class="note">Personal check-ins appear once an AI model is connected (Progress → AI tutor).</span>`}
+      </div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="panel"><h2 style="margin-bottom:10px">Today's plan</h2><ul class="plan">${plan.map(p=>`
+      <li><span class="tick ${p.done?"done":""}">${p.done?ICON.check:""}</span><div><h3>${esc(p.t)}</h3><p class="meta">${esc(p.m)}</p></div><div>${p.a}</div></li>`).join("")}</ul></div>
+    <div class="stack">
+      <div class="panel">
+        <div class="streak"><span class="num">${st}</span><div><h3>day streak</h3><p class="note">${st?"连续学习 · keep it going":"Study today to start one"}</p></div></div>
+        <div class="strip" aria-label="Last 14 days">${strip}</div>
+      </div>
+      <div class="panel wotd">
+        <p class="label">${S.deck.cards[w.h]?"Revisit":"Coming up"}</p>
+        <div class="hz">${hzHTML(w.h,w.p)}</div>
+        <div class="py">${pyHTML(w.p)}</div>
+        <p class="muted">${esc(w.e)}</p>
+        <div class="row" style="justify-content:center;margin-top:6px">${spk(w.h)}</div>
+      </div>
+    </div>
+  </div>`;
+}
+async function doCheckin(){
+  if(!sample||checkBusy)return;checkBusy=true;render();
+  const t=today(),days=[];for(let i=6;i>=1;i--){const k=dk(t-i),h=H(k);days.push(`${k}: ${h.r} reviews (${h.r?Math.round(h.c/h.r*100):0}% right), ${h.n} new words, ${h.m} chat messages, ${h.l} lessons`);}
+  const cs=cards(),done=LESSONS.filter(l=>S.lessons.items[l.id]?.done).map(l=>l.title);
+  const prompt=`You are Lǎoshī (老师), a Mandarin tutor following up with your beginner student (HSK 1–2) at the start of their study day.
+Write a short check-in of 60–110 words in English, with one or two simple Chinese phrases (characters followed by pinyin in brackets). Be specific to the data: acknowledge what they did recently (or the gap if they missed days), name one weak spot or concrete thing to focus on, and set today's priorities. Warm and direct. No emoji, no headings, no lists, no sign-off.
+
+Data:
+Today: ${new Date().toDateString()}
+Current streak: ${streak()} days
+Last 6 days:
+${days.join("\n")}
+Today so far: ${JSON.stringify(H(dk(t)))}
+Deck: ${cs.length} words (${cs.filter(c=>stage(c)==="known"||stage(c)==="mastered").length} known, ${cs.filter(c=>stage(c)==="learning").length} learning); ${dueCards().length} due today; ${newLeft()} new words still to learn today
+Words most often forgotten: ${cs.filter(c=>c.lapses).sort((a,b)=>b.lapses-a.lapses).slice(0,6).map(c=>c.h+" ("+c.e+")").join(", ")||"none yet"}
+Weak spots: ${S.state.weak.join("; ")||"none recorded"}
+Lessons completed: ${done.join("; ")||"none"}. Next lesson: ${nextLesson().title}
+Tutor notes: ${S.state.notes||"none yet"}
+Last conversation summary: ${S.chat.summary||"none"}`;
+  try{const {text}=await sample(prompt,{cache:false,onText:({text})=>{const el=$("#ci-text");if(el)el.textContent=text;}});S.state.checkin={day:dk(t),text:text.trim()};save("state");}
+  catch(e){if(onClaude&&(e.code==="not_granted"||e.code==="sampling_disabled"))sample=null;toast(sampleErr(e));}
+  checkBusy=false;render();
+}
+
+/* review */
+const rev={active:false,queue:[],i:0,revealed:false,done:0,right:0,ex:false,undo:[],spoke:null};
+function startReview(){
+  const q=dueCards().map(c=>({h:c.h,isNew:!c.reps}));
+  unseen().slice(0,newLeft()).forEach(w=>q.push({h:w.h,isNew:true,fresh:true}));
+  Object.assign(rev,{active:q.length>0,queue:q,i:0,revealed:false,done:0,right:0,ex:false,undo:[],spoke:null});
+}
+const cardData = it=>S.deck.cards[it.h]||VMAP[it.h];
+function rReview(){
+  const el=$("#v-review");
+  if(!rev.active||rev.i>=rev.queue.length){
+    const more=dueCards().length+newLeft();
+    el.innerHTML=`<div class="panel card">
+      <div class="hz" style="font-size:3rem;font-weight:700;color:var(--red)">${rev.done?"完成":"休息"}</div>
+      <h2>${rev.done?"Session complete":"Nothing due right now"}</h2>
+      <p class="muted">${rev.done?`${rev.done} cards reviewed · ${Math.round(rev.right/rev.done*100)}% remembered`:"Come back later, or raise your daily new-word goal in Progress."}</p>
+      <div class="row" style="justify-content:center;margin-top:8px">
+        ${more?`<button class="btn primary" data-act="restart">Keep going (${more})</button>`:""}
+        ${rev.undo.length&&rev.active?`<button class="btn ghost" data-act="undo">Undo last grade</button>`:""}
+        <button class="btn" data-act="nav" data-v="tutor">Practise in conversation</button>
+      </div></div>`;
+    return;
+  }
+  const it=rev.queue[rev.i],w=cardData(it),left=rev.queue.length-rev.i,mode=S.state.settings.front;
+  const front=mode==="english"?`<div class="front en">${esc(w.e)}</div>`
+    :mode==="audio"?(canSpeak?`<button class="listen-btn" data-act="speak" data-t="${esc(w.h)}" aria-label="Play the word again">${ICON.speak}</button><p class="note">What did you hear?</p>`:`<div class="front hz">${esc(w.h)}</div>`)
+    :`<div class="front hz">${esc(w.h)}</div>`;
+  const c=S.deck.cards[it.h]||{ivl:0,ease:2.5,reps:0};
+  const ex=S.deck.ex[w.h];
+  const exLine=ex?ex.split("\n").map(l=>l.trim()).filter(Boolean)[0]:"";
+  el.innerHTML=`
+  <div class="row" style="justify-content:space-between"><div class="row"><p class="label">${left} left · ${rev.done} done</p>${rev.undo.length?`<button class="btn ghost" data-act="undo" title="Undo last grade (Z)" style="padding:4px 8px;display:inline-flex;gap:5px;align-items:center"><span style="width:15px;height:15px;display:inline-grid">${ICON.undo}</span>Undo</button>`:""}</div><p class="note kbd-hint"><kbd>Space</kbd> reveal · <kbd>1</kbd>–<kbd>4</kbd> grade · <kbd>Z</kbd> undo</p></div>
+  <div class="progressbar"><span style="width:${Math.round(rev.done/(rev.done+left)*100)}%"></span></div>
+  <div class="panel card">
+    ${it.isNew?`<span class="newtag">New word</span>`:""}
+    ${rev.revealed?`<div class="front hz">${hzHTML(w.h,w.p)}</div>
+      <div class="py">${pyHTML(w.p)}</div><div class="mean">${esc(w.e)}</div>
+      <div class="row" style="justify-content:center">${spk(w.h)}${sample&&!ex?`<button class="btn ghost" data-act="example" ${rev.ex?"disabled":""}>${rev.ex?"Writing…":"Example sentence"}</button>`:""}</div>
+      ${ex?`<div class="ex-sent"><div class="example hz">${esc(ex)}</div>${spk(exLine)}</div>`:""}`
+    :`${front}<button class="btn primary" data-act="reveal" style="margin-top:14px">Show answer</button>`}
+  </div>
+  ${rev.revealed?`<div class="grades">${["Again","Hard","Good","Easy"].map((l,g)=>`<button class="g${g}" data-act="grade" data-g="${g}">${l}<small>${ivlLabel(schedule(c,g).ivl)}</small></button>`).join("")}</div>`:""}
+  <div class="legend"><span class="t1">1 ā</span><span class="t2">2 á</span><span class="t3">3 ǎ</span><span class="t4">4 à</span><span class="t5">neutral a</span></div>`;
+  /* auto-play: listening cards speak when shown; others on reveal if enabled */
+  const key=rev.i+":"+rev.revealed+":"+rev.queue.length;
+  if(rev.spoke!==key){rev.spoke=key;
+    if(!rev.revealed&&mode==="audio")setTimeout(()=>speak(w.h),150);
+    else if(rev.revealed&&S.state.settings.autoplay&&mode!=="audio")speak(w.h);}
+}
+function reveal(){if(!rev.active||rev.revealed||rev.i>=rev.queue.length)return;rev.revealed=true;render();}
+function grade(g){
+  if(!rev.revealed||rev.i>=rev.queue.length)return;
+  const it=rev.queue[rev.i],k=dk(today());
+  rev.undo.push({i:rev.i,h:it.h,fresh:!!it.fresh,card:S.deck.cards[it.h]?clone(S.deck.cards[it.h]):null,hist:clone(H(k)),hadHist:!!S.state.history[k],done:rev.done,right:rev.right,qlen:rev.queue.length});
+  if(rev.undo.length>20)rev.undo.shift();
+  if(it.fresh&&!S.deck.cards[it.h]){addWord(VMAP[it.h],"hsk1");log("n");it.fresh=false;}
+  S.deck.cards[it.h]=schedule(S.deck.cards[it.h],g);
+  rev.done++;if(g>=2)rev.right++;log("r");if(g>=2)log("c");
+  if(g===0)rev.queue.push({h:it.h,isNew:false});
+  save("deck");rev.i++;rev.revealed=false;rev.ex=false;render();
+}
+function undo(){
+  const u=rev.undo.pop();if(!u)return;
+  const k=dk(today());
+  if(u.card)S.deck.cards[u.h]=u.card;else delete S.deck.cards[u.h];
+  if(u.hadHist)S.state.history[k]=u.hist;else delete S.state.history[k];
+  rev.queue.length=u.qlen;rev.i=u.i;rev.done=u.done;rev.right=u.right;rev.active=true;
+  if(u.fresh)rev.queue[u.i].fresh=true;
+  rev.revealed=true;rev.ex=false;rev.spoke=rev.i+":true:"+rev.queue.length;
+  save("deck");save("state");render();toast("Undid last grade.");
+}
+async function example(){
+  const it=rev.queue[rev.i],w=cardData(it);if(!sample||rev.ex)return;rev.ex=true;render();
+  try{const {text}=await sample(`Give one very simple example sentence (HSK 1 level) using the Chinese word ${w.h} (${w.p}, "${w.e}"). Reply with exactly three lines and nothing else: the Chinese sentence, its pinyin with tone marks, its English translation.`,{modelTier:"quick",cache:{gcTime:864e5}});
+    S.deck.ex[w.h]=text.trim();save("deck");}
+  catch(e){toast(sampleErr(e));}
+  rev.ex=false;render();
+}
+
+/* tutor */
+let chatBusy=false,chatCtl=null,wrapBusy=false,streamText="";
+function rulesTurn(){
+  const words=cards().slice(-80).map(c=>c.h).join(" ")||"(just starting)";
+  const sc=S.chat.scenario?`Scenario for this conversation: ${S.chat.scenario}`:"Scenario: free conversation.";
+  return `You are Lǎoshī (老师), a warm, patient Mandarin tutor doing conversation practice with a beginner (HSK 1–2).
+Rules for every reply:
+- Keep it short: 1–3 simple Chinese sentences, mostly HSK 1–2 words.
+- Format each reply as separate lines:
+中文: <Chinese>
+Pinyin: <pinyin with tone marks>
+English: <English translation>
+- If the learner's last message contained a mistake (grammar, word choice, word order, wrong tone marks), put a first line: "Correction: <corrected Chinese> (<pinyin>) — <one short reason in English>". If it was fully correct, occasionally put "Nice: <brief specific praise>" instead. Never both.
+- The learner may write in characters, pinyin or English. If they write English, show how to say it in Chinese in the Correction line format, then continue.
+- If they ask a question about Chinese, answer briefly in English (you may add a line "Note: ..."), then continue the conversation.
+- End most replies with one simple question to keep them talking.
+Learner context:
+- Words they are studying: ${words}
+- Weak spots: ${S.state.weak.join("; ")||"none recorded yet"}
+- Tutor notes from earlier sessions: ${S.state.notes||"none yet"}
+${sc}`;
+}
+function botHTML(text){
+  let zh="";
+  const lines=text.split("\n").map(l=>l.trim()).filter(Boolean).map(l=>{
+    let m;
+    if(m=l.match(/^中文[:：]\s*(.*)/)){zh+=m[1];return `<div class="zh">${esc(m[1])}</div>`;}
+    if(m=l.match(/^Pinyin[:：]\s*(.*)/i))return `<div class="pyl">${esc(m[1])}</div>`;
+    if(m=l.match(/^English[:：]\s*(.*)/i))return `<div class="enl">${esc(m[1])}</div>`;
+    if(m=l.match(/^Correction[:：]\s*(.*)/i))return `<div class="corr"><b>Correction</b> · ${esc(m[1])}</div>`;
+    if(m=l.match(/^Nice[:：]\s*(.*)/i))return `<div class="nice"><b>Nice</b> · ${esc(m[1])}</div>`;
+    if(m=l.match(/^Note[:：]\s*(.*)/i))return `<div class="plain muted">${esc(m[1])}</div>`;
+    return `<div class="plain">${esc(l)}</div>`;
+  }).join("");
+  return lines+(zh?`<div class="tools">${spk(zh)}</div>`:"");
+}
+function rTutor(){
+  $("#scenarios").innerHTML=SCENARIOS.map(([t],i)=>`<button class="chip" data-act="scenario" data-i="${i}" ${chatBusy?"disabled":""}>${esc(t)}</button>`).join("");
+  const msgs=S.chat.msgs.filter(m=>!m.hidden);
+  let html="";
+  if(!msgs.length&&!chatBusy)html=`<div class="msg bot">${botHTML("中文: 你好！我是你的汉语老师。\nPinyin: Nǐ hǎo! Wǒ shì nǐ de Hànyǔ lǎoshī.\nEnglish: Hello! I'm your Chinese teacher.\nPick a scenario above, or just say hello. 你叫什么名字？")}</div>`;
+  html+=msgs.map(m=>m.role==="user"?`<div class="msg user">${esc(m.content)}</div>`:`<div class="msg bot">${botHTML(m.content)}</div>`).join("");
+  if(chatBusy)html+=`<div class="msg bot" id="stream">${streamText?botHTML(streamText):`<span class="thinking">Lǎoshī is writing…</span>`}</div>`;
+  if(S.chat.summary)html+=`<div class="summary"><p class="label">Session summary</p><p>${esc(S.chat.summary)}</p></div>`;
+  const q=!!S.state.settings.quiet;
+  $("#chat").innerHTML=html;$("#chat").classList.toggle("quiet",q);
+  $("#quiet-btn").textContent=q?"Show pinyin":"Hide pinyin";$("#quiet-btn").setAttribute("aria-pressed",q);
+  $("#chat-off").hidden=!!sample||!cloudReady;
+  $("#composer").hidden=!sample;
+  $("#send-btn").textContent=chatBusy?"Stop":"Send";
+  $("#wrap-btn").disabled=wrapBusy||chatBusy||S.chat.msgs.filter(m=>m.role==="user"&&!m.hidden).length<2;
+  $("#wrap-btn").textContent=wrapBusy?"Summarising…":"Wrap up session";
+}
+async function sendChat(text,hidden=false){
+  if(!sample||chatBusy)return;
+  S.chat.msgs.push({role:"user",content:text,hidden});S.chat.summary=null;
+  if(!hidden)log("m");
+  chatBusy=true;streamText="";chatCtl=new AbortController();render();scrollChat();
+  const turns=S.chat.msgs.slice(-24).map(m=>({role:m.role,content:m.content}));
+  try{
+    const {text:out}=await sample([{role:"user",content:rulesTurn()},...turns],{cache:false,modelTier:"quick",signal:chatCtl.signal,onText:({text})=>{streamText=text;const el=$("#stream");if(el)el.innerHTML=botHTML(text);scrollChat();}});
+    S.chat.msgs.push({role:"assistant",content:out.trim()});
+  }catch(e){
+    if(e.text)S.chat.msgs.push({role:"assistant",content:e.text.trim()});
+    if(onClaude&&(e.code==="not_granted"||e.code==="sampling_disabled"))sample=null;
+    if(e.code!=="cancelled")toast(sampleErr(e));
+  }
+  if(S.chat.msgs.length>60)S.chat.msgs=S.chat.msgs.slice(-60);
+  chatBusy=false;streamText="";save("chat");render();scrollChat();
+}
+function scrollChat(){const c=$("#chat");if(c&&view==="tutor")c.lastElementChild?.scrollIntoView({block:"end",behavior:"smooth"});}
+async function wrapUp(){
+  if(!sample||wrapBusy)return;wrapBusy=true;render();
+  const tr=S.chat.msgs.filter(m=>!m.hidden).slice(-30).map(m=>(m.role==="user"?"Learner: ":"Tutor: ")+m.content).join("\n");
+  const prompt=`You are a Mandarin tutor reviewing a practice conversation with a beginner (HSK 1–2).
+Existing tutor notes about this learner: ${S.state.notes||"none"}
+Existing weak spots: ${S.state.weak.join("; ")||"none"}
+Words already in their deck (do not suggest these): ${cards().map(c=>c.h).join(" ")}
+
+Transcript:
+${tr}
+
+Reply with only a JSON object:
+{"summary":"2–3 sentences to the learner in English: what went well and what to practise next",
+ "newWords":[{"h":"汉字","p":"pinyin with tone marks, one syllable per space-separated chunk, e.g. 'xǐ huan'","e":"short English meaning"}],
+ "weakSpots":["short specific phrase, e.g. 'placing time words before the verb'"],
+ "notes":"updated private notes about this learner for future sessions, under 500 characters, merging the existing notes"}
+newWords: up to 6 useful words from this conversation they struggled with or should learn. weakSpots: up to 4.`;
+  try{
+    const r=await sample.json(prompt);
+    let added=0;for(const w of (r.newWords||[]).slice(0,6))if(addWord({h:String(w.h||""),p:String(w.p||""),e:String(w.e||"")},"chat"))added++;
+    const ws=(r.weakSpots||[]).map(String).filter(Boolean);
+    S.state.weak=[...ws,...S.state.weak.filter(x=>!ws.includes(x))].slice(0,12);
+    if(r.notes)S.state.notes=String(r.notes).slice(0,700);
+    S.chat.summary=String(r.summary||"")+(added?` Added ${added} new word${added>1?"s":""} to your review deck.`:"");
+    save("deck");save("state");save("chat");
+  }catch(e){toast(sampleErr(e));}
+  wrapBusy=false;render();scrollChat();
+}
+
+/* lessons */
+let openLesson=null,genBusy=false,quiz={picks:{},submitted:false},showPy=true;
+function rLessons(){
+  const el=$("#v-lessons");
+  if(!openLesson){
+    const nx=nextLesson();
+    el.innerHTML=`<div><h2>Grammar lessons</h2><p class="note">Short HSK 1–2 lessons, each with examples, a mini reading and a quiz. Lǎoshī writes each lesson fresh when you open it.</p></div>
+    <div class="lesson-list">${LESSONS.map((l,i)=>{const it=S.lessons.items[l.id];return `<button class="lesson-item ${l.id===nx.id&&!it?.done?"next":""}" data-act="lesson" data-id="${l.id}">
+      <span class="key">${esc(l.key)}</span><span class="info"><span class="label">Lesson ${i+1}</span><b>${esc(l.title)}</b>
+      <span class="st ${it?.done?"done":""}">${it?.done?`Done · quiz ${it.score}%`:it?.data?"Started":l.id===nx.id?"Up next":"Not started"}</span></span></button>`;}).join("")}</div>`;
+    return;
+  }
+  const L=LESSONS.find(l=>l.id===openLesson),it=S.lessons.items[openLesson],d=it?.data;
+  let body="";
+  if(!d){
+    body=genBusy?`<div class="panel"><p class="thinking">Lǎoshī is writing this lesson. This can take up to a minute…</p></div>`
+      :sample?`<div class="panel stack"><p>This lesson hasn't been written yet.</p><div><button class="btn primary" data-act="gen">Write this lesson</button></div></div>`
+      :`<div class="panel note">Lessons are written by an AI model. Connect one in <a href="#progress" data-act="nav" data-v="progress">Progress → AI tutor</a> to generate them.</div>`;
+  }else{
+    const qs=d.quiz||[];const score=quiz.submitted?Math.round(qs.filter((q,i)=>quiz.picks[i]===q.answer).length/qs.length*100):null;
+    body=`
+    <div class="panel stack"><p>${esc(d.intro)}</p><div class="pattern">${esc(d.pattern)}</div>${d.tip?`<p class="note"><b style="color:var(--gold)">Watch out:</b> ${esc(d.tip)}</p>`:""}</div>
+    <div class="panel stack"><h3>Examples</h3><div class="ex-list">${(d.examples||[]).map(x=>`<div class="ex"><div class="zh">${esc(x.h)}</div>${spk(x.h)}<div class="sub">${esc(x.p)}<br>${esc(x.e)}</div></div>`).join("")}</div></div>
+    ${d.reading?`<div class="panel stack"><div class="row" style="justify-content:space-between"><h3 class="hz">${esc(d.reading.title||"阅读")}</h3><button class="btn ghost" data-act="togglepy">${showPy?"Hide":"Show"} pinyin & English</button></div>
+      <div class="ex-list">${(d.reading.lines||[]).map(x=>`<div class="ex"><div class="zh">${esc(x.h)}</div>${spk(x.h)}${showPy?`<div class="sub">${esc(x.p)}<br>${esc(x.e)}</div>`:""}</div>`).join("")}</div></div>`:""}
+    <div class="panel"><h3>Quiz</h3>${qs.map((q,i)=>`<div class="quiz-q"><p><b>${i+1}.</b> ${esc(q.q)}</p><div class="opts">${(q.options||[]).map((o,j)=>{
+      let c="";if(quiz.submitted){if(j===q.answer)c="right";else if(quiz.picks[i]===j)c="wrong";}else if(quiz.picks[i]===j)c="picked";
+      return `<button class="opt ${c}" data-act="pick" data-q="${i}" data-o="${j}" ${quiz.submitted?"disabled":""}>${esc(o)}</button>`;}).join("")}</div>
+      ${quiz.submitted&&q.why?`<p class="note">${esc(q.why)}</p>`:""}</div>`).join("")}
+      <div class="row" style="margin-top:10px">${quiz.submitted?`<b>Score: ${score}%</b>${it.done?`<span class="note">Saved to your progress.</span>`:""}`:`<button class="btn primary" data-act="submitquiz" ${Object.keys(quiz.picks).length<qs.length?"disabled":""}>Check answers</button>`}</div></div>
+    ${(d.vocab||[]).length?`<div class="panel stack"><h3>Words from this lesson</h3><div class="row">${d.vocab.map(v=>`<span class="chip"><span class="hz">${esc(v.h)}</span> ${pyHTML(v.p)} · ${esc(v.e)}</span>`).join("")}</div>
+      <div><button class="btn" data-act="addvocab">Add to my review deck</button></div></div>`:""}
+    ${sample?`<div><button class="btn ghost" data-act="regen" ${genBusy?"disabled":""}>${genBusy?"Rewriting…":"Write a new version of this lesson"}</button></div>`:""}`;
+  }
+  el.innerHTML=`<div class="row"><button class="btn ghost" data-act="backlessons">← All lessons</button></div>
+  <div class="row" style="gap:14px"><span class="hz" style="font-size:2.4rem;font-weight:700;color:var(--red)">${esc(L.key)}</span><div><p class="label">Lesson ${LESSONS.indexOf(L)+1}</p><h2>${esc(L.title)}</h2></div></div>${body}`;
+}
+async function genLesson(refresh){
+  const L=LESSONS.find(l=>l.id===openLesson);if(!sample||genBusy)return;genBusy=true;render();
+  const prompt=`Create a short Mandarin grammar lesson for a beginner (HSK 1–2) on: "${L.title}" (${L.hint}).
+Use HSK 1–2 vocabulary wherever possible. Reply with only a JSON object:
+{"intro":"2–4 short sentences in plain English explaining the point",
+ "pattern":"the structure, e.g. Subject + 是 + Noun",
+ "tip":"one common learner mistake to avoid, one sentence",
+ "examples":[{"h":"Chinese sentence","p":"pinyin with tone marks","e":"English"}],
+ "reading":{"title":"short Chinese title","lines":[{"h":"Chinese","p":"pinyin","e":"English"}]},
+ "quiz":[{"q":"question in English (may include Chinese)","options":["","","",""],"answer":0,"why":"one-sentence explanation"}],
+ "vocab":[{"h":"word","p":"pinyin with tone marks, syllables separated by spaces","e":"short English"}]}
+examples: 4 items from simple to slightly harder. reading: a 4–6 line mini story or dialogue using the point. quiz: 4 questions, vary the position of the correct answer (answer is the 0-based index). vocab: up to 5 words from the lesson worth learning.`;
+  try{
+    const data=await sample.json(prompt,{cache:refresh?{gcTime:864e5,refresh:true}:{gcTime:864e5}});
+    if(!data||!Array.isArray(data.quiz))throw {code:"invalid_json"};
+    S.lessons.items[openLesson]={...(S.lessons.items[openLesson]||{}),data};quiz={picks:{},submitted:false};save("lessons");
+  }catch(e){toast(sampleErr(e));}
+  genBusy=false;render();
+}
+function submitQuiz(){
+  const it=S.lessons.items[openLesson],qs=it.data.quiz;quiz.submitted=true;
+  const score=Math.round(qs.filter((q,i)=>quiz.picks[i]===q.answer).length/qs.length*100);
+  const first=!it.done;it.done=true;it.score=Math.max(it.score||0,score);
+  if(first)log("l");
+  const L=LESSONS.find(l=>l.id===openLesson);
+  if(score<75&&!S.state.weak.includes(L.title))S.state.weak=[L.title,...S.state.weak].slice(0,12);
+  save("lessons");save("state");render();
+}
+
+/* progress */
+let resetAsk=false,wlQ="",wlF="deck";
+const fold=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g,"").toLowerCase();
+function dueLabel(c){const d=c.due-today();return !c.reps?"not reviewed yet":d<=0?"due today":d===1?"due tomorrow":`due in ${ivlLabel(d)}`;}
+function wlHTML(){
+  let list=wlF==="unseen"?unseen().map(w=>({...w,unseen:true})):cards();
+  if(wlF==="due")list=list.filter(c=>c.due<=today());
+  if(wlF==="hard")list=list.filter(c=>c.lapses).sort((a,b)=>b.lapses-a.lapses);
+  const q=wlQ.trim();
+  if(q){const fq=fold(q);list=list.filter(w=>w.h.includes(q)||fold(w.p).includes(fq)||String(w.e).toLowerCase().includes(q.toLowerCase()));}
+  if(!list.length)return `<p class="note" style="padding:8px 6px">${q?"No words match.":wlF==="deck"?"Your deck is empty. Start a review to add words.":"Nothing here right now."}</p>`;
+  return list.slice(0,300).map(w=>{const st=w.unseen?"":stage(w);return `<div class="wl-row"><span class="h">${hzHTML(w.h,w.p)}</span><span class="d">${pyHTML(w.p)} · ${esc(w.e)}<small>${w.unseen?"HSK 1 · not learned yet":esc(dueLabel(w))+(w.lapses?` · forgotten ${w.lapses}×`:"")+({you:" · added by you",chat:" · from Tutor",lesson:" · from a lesson"}[w.src]||"")}</small></span>${st?`<span class="stg ${st}">${st==="new"?"new":st}</span>`:"<span></span>"}${spk(w.h)}</div>`;}).join("");
+}
+function rProgress(){
+  const cs=cards(),st={new:0,learning:0,known:0,mastered:0};cs.forEach(c=>st[stage(c)]++);
+  let r=0,c=0;for(let i=0;i<30;i++){const h=H(dk(today()-i));r+=h.r;c+=h.c;}
+  const tot=Math.max(1,cs.length);
+  const t=today(),dow=new Date().getDay(),start=t-(11*7+dow);
+  let heat="";for(let n=start;n<start+12*7;n++){if(n>t){heat+=`<div class="fut"></div>`;continue;}const h=H(dk(n)),v=h.r+h.m*3+h.l*15;const lv=v===0?0:v<10?1:v<25?2:v<50?3:4;heat+=`<div class="${lv?"h"+lv:""}" title="${dk(n)}: ${h.r} reviews, ${h.m} messages, ${h.l} lessons"></div>`;}
+  const lessonsDone=LESSONS.filter(l=>S.lessons.items[l.id]?.done).length;
+  $("#v-progress").innerHTML=`
+  <div class="tiles">
+    <div class="tile"><span class="label">Streak</span><b style="color:var(--red)">${streak()}</b><span class="note">days</span></div>
+    <div class="tile"><span class="label">Words</span><b>${cs.length}</b><span class="note">of ${VOCAB.length} HSK 1 core</span></div>
+    <div class="tile"><span class="label">Recall · 30d</span><b>${r?Math.round(c/r*100)+"%":"–"}</b><span class="note">${r} reviews</span></div>
+    <div class="tile"><span class="label">Lessons</span><b>${lessonsDone}</b><span class="note">of ${LESSONS.length}</span></div>
+  </div>
+  <div class="panel stack"><h3>Your words</h3>
+    <div class="bar"><span style="width:${st.mastered/tot*100}%;background:var(--red)"></span><span style="width:${st.known/tot*100}%;background:var(--heat2)"></span><span style="width:${st.learning/tot*100}%;background:var(--t2)"></span><span style="width:${st.new/tot*100}%;background:var(--t5)"></span></div>
+    <div class="keys"><span><i style="background:var(--red)"></i>Mastered ${st.mastered}</span><span><i style="background:var(--heat2)"></i>Known ${st.known}</span><span><i style="background:var(--t2)"></i>Learning ${st.learning}</span><span><i style="background:var(--t5)"></i>Not yet reviewed ${st.new}</span></div>
+    <p class="note">Known means you'll next see it in a week or more; mastered, three weeks or more.</p></div>
+  <div class="panel stack"><h3>Last 12 weeks</h3><div class="heat-wrap"><div class="heat">${heat}</div></div></div>
+  <div class="panel stack"><h3>Weak spots Lǎoshī is tracking</h3>
+    ${S.state.weak.length?`<div class="weak">${S.state.weak.map((w,i)=>`<span>${esc(w)}<button data-act="rmweak" data-i="${i}" aria-label="Remove">×</button></span>`).join("")}</div>`:`<p class="note">None yet. They come from conversation wrap-ups and lesson quizzes.</p>`}
+    ${S.state.notes?`<div><p class="label">Tutor notes</p><p class="note" style="white-space:pre-wrap">${esc(S.state.notes)}</p></div>`:""}</div>
+  <div class="panel stack"><div class="row" style="justify-content:space-between"><h3>Word list</h3><span class="note">${cs.length} in your deck</span></div>
+    <div class="wl-tools"><input type="search" id="wl-q" placeholder="Search 汉字, pinyin (no tones needed) or English" value="${esc(wlQ)}" aria-label="Search words">
+      <select id="wl-f" aria-label="Filter">${[["deck","My deck"],["due","Due today"],["hard","Often forgotten"],["unseen","Not learned yet"]].map(([v,l])=>`<option value="${v}" ${v===wlF?"selected":""}>${l}</option>`).join("")}</select></div>
+    <div class="wl" id="wl">${wlHTML()}</div>
+    <div><p class="label" style="margin-bottom:6px">Add your own word</p>
+      <form class="addw" id="addw"><input type="text" id="aw-h" placeholder="汉字" aria-label="Characters" required><input type="text" id="aw-p" placeholder="pinyin, e.g. kā fēi" aria-label="Pinyin"><input type="text" id="aw-e" placeholder="meaning" aria-label="Meaning" required><button class="btn" type="submit">Add</button></form>
+      <p class="note" style="margin-top:6px">Separate pinyin syllables with spaces so tones colour correctly. New words show up in today's review.</p></div>
+  </div>
+  ${aiSettingsHTML()}
+  <div class="panel"><h3 style="margin-bottom:6px">Settings</h3>
+    <div class="set-row"><div><b>New words per day</b><p class="note">How many HSK 1 words to introduce each day.</p></div>
+      <select id="set-new" data-act="none">${[3,5,8,10,15,20].map(n=>`<option ${n===S.state.settings.newPerDay?"selected":""}>${n}</option>`).join("")}</select></div>
+    <div class="set-row"><div><b>Card front</b><p class="note">What you see before revealing the answer.</p></div>
+      <select id="set-front">${[["hanzi","Characters → meaning"],["english","English → characters"],["audio","Listening → meaning"]].map(([v,l])=>`<option value="${v}" ${v===S.state.settings.front?"selected":""}>${l}</option>`).join("")}</select></div>
+    <div class="set-row"><div><b>Play audio on reveal</b><p class="note">Hear each word when you flip the card.</p></div>
+      <div class="seg">${[[true,"On"],[false,"Off"]].map(([v,l])=>`<button data-act="setauto" data-v="${v}" aria-pressed="${S.state.settings.autoplay===v}">${l}</button>`).join("")}</div></div>
+    <div class="set-row"><div><b>Theme</b><p class="note">Rice paper or red lacquer.</p></div>
+      <div class="seg">${[["system","Auto"],["light","Light"],["dark","Dark"]].map(([v,l])=>`<button data-act="settheme" data-v="${v}" aria-pressed="${S.state.settings.theme===v}">${l}</button>`).join("")}</div></div>
+    <div class="set-row"><div><b>Backup</b><p class="note">Save your progress to a file, or restore it on another device.</p></div>
+      <div class="row"><button class="btn" data-act="export">Export</button><label class="btn" style="cursor:pointer">Import<input type="file" id="import-file" accept="application/json,.json" hidden></label></div></div>
+    <div class="set-row"><div><b>Start over</b><p class="note">Erase your deck, history, lessons and chat.</p></div>
+      <div class="row">${resetAsk?`<span class="note">Erase everything?</span><button class="btn danger" data-act="resetyes">Erase</button><button class="btn" data-act="resetno">Cancel</button>`:`<button class="btn danger" data-act="reset">Reset progress</button>`}</div></div>
+  </div>`;
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click",e=>{
+  const a=e.target.closest("[data-act]");if(!a||a.disabled)return;const d=a.dataset;
+  switch(d.act){
+    case"nav":go(d.v);break;
+    case"speak":speak(d.t);break;
+    case"checkin":doCheckin();break;
+    case"reveal":reveal();break;
+    case"grade":grade(+d.g);break;
+    case"restart":startReview();render();break;
+    case"example":example();break;
+    case"undo":undo();break;
+    case"aiprov":aiStatus="";AI.provider=d.v;if(d.v==="none")AI.model="";saveAI();sample=makeSampler();render();break;
+    case"aisave":aiStatus="";readAIForm();saveAI();sample=makeSampler();render();toast(sample?"AI tutor settings saved.":"Add your API key to connect.");break;
+    case"aitest":aiTest();break;
+    case"export":exportData();break;
+    case"quiet":S.state.settings.quiet=!S.state.settings.quiet;save("state");render();break;
+    case"setauto":S.state.settings.autoplay=d.v==="true";save("state");render();break;
+    case"settheme":S.state.settings.theme=d.v;save("state");render();break;
+    case"scenario":{const [t,desc]=SCENARIOS[+d.i];S.chat.scenario=`${t}: ${desc}`;S.chat.msgs=[];S.chat.summary=null;sendChat(`(Let's start: ${t}. Greet me and ask the first question.)`,true);break;}
+    case"newchat":if(chatBusy)break;S.chat={msgs:[],scenario:null,summary:null};save("chat");render();break;
+    case"wrap":wrapUp();break;
+    case"lesson":openLesson=d.id;quiz={picks:{},submitted:false};if(view!=="lessons")go("lessons");else{render();window.scrollTo(0,0);}break;
+    case"backlessons":openLesson=null;render();break;
+    case"gen":genLesson(false);break;
+    case"regen":genLesson(true);break;
+    case"togglepy":showPy=!showPy;render();break;
+    case"pick":quiz.picks[+d.q]=+d.o;render();break;
+    case"submitquiz":submitQuiz();break;
+    case"addvocab":{const v=S.lessons.items[openLesson]?.data?.vocab||[];const n=v.filter(w=>addWord(w,"lesson")).length;save("deck");toast(n?`Added ${n} word${n>1?"s":""} to your deck.`:"Those words are already in your deck.");render();break;}
+    case"rmweak":S.state.weak.splice(+d.i,1);save("state");render();break;
+    case"reset":resetAsk=true;render();break;
+    case"resetno":resetAsk=false;render();break;
+    case"resetyes":for(const n of NAMES){S[n]=clone(DEF[n]);save(n);}resetAsk=false;Object.assign(rev,{active:false});toast("Progress erased.");render();break;
+  }
+});
+document.addEventListener("click",e=>{const l=e.target.closest(".chat.quiet .pyl,.chat.quiet .enl");if(l)l.classList.toggle("shown");});
+function readAIForm(){const k=$("#ai-key"),u=$("#ai-url"),m=$("#ai-model");if(k)AI.key=k.value.trim();if(u)AI.url=u.value.trim()||AI_DEF.url;if(m)AI.model=m.value.trim();}
+async function aiTest(){
+  readAIForm();saveAI();sample=makeSampler();const st=$("#ai-status");
+  if(!sample){st.textContent="Add your API key first.";return;}
+  st.textContent="Testing…";
+  try{const {text}=await sample("Reply with exactly: 你好",{});aiStatus="Connected ✓ "+text.trim().slice(0,20);}
+  catch(e){aiStatus=sampleErr(e);}
+  render();
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify({app:"laoshi",version:1,exported:new Date().toISOString(),data:S},null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`laoshi-backup-${dk(today())}.json`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+document.addEventListener("change",async e=>{
+  if(e.target.id!=="import-file"||!e.target.files[0])return;
+  try{const o=JSON.parse(await e.target.files[0].text());const d=o.data||o;if(!d.deck||!d.state)throw 0;
+    for(const n of NAMES)if(d[n]){S[n]=mergeDef(n,d[n]);save(n);}rev.active=false;render();toast("Progress restored.");}
+  catch{toast("That file isn't a Lǎoshī backup.");}
+  e.target.value="";
+});
+document.addEventListener("input",e=>{if(e.target.id==="wl-q"){wlQ=e.target.value;$("#wl").innerHTML=wlHTML();}});
+document.addEventListener("submit",e=>{
+  if(e.target.id!=="addw")return;e.preventDefault();
+  const h=$("#aw-h").value.trim(),p=$("#aw-p").value.trim().replace(/\s+/g," "),en=$("#aw-e").value.trim();
+  if(!h||!en)return;
+  if(S.deck.cards[h]){toast(`${h} is already in your deck.`);return;}
+  addWord({h,p,e:en},"you");save("deck");rev.active=false;wlF="deck";wlQ="";render();toast(`Added ${h} to your deck.`);
+});
+document.addEventListener("change",e=>{
+  if(e.target.id==="wl-f"){wlF=e.target.value;$("#wl").innerHTML=wlHTML();return;}
+  if(e.target.id==="set-new"){S.state.settings.newPerDay=+e.target.value;save("state");rev.active=false;render();}
+  if(e.target.id==="set-front"){S.state.settings.front=e.target.value;save("state");render();}
+});
+$("#composer").addEventListener("submit",e=>{
+  e.preventDefault();
+  if(chatBusy){chatCtl?.abort();return;}
+  const v=$("#chat-input").value.trim();if(!v)return;$("#chat-input").value="";autoSize();sendChat(v);
+});
+const autoSize=()=>{const t=$("#chat-input");t.style.height="auto";t.style.height=Math.min(t.scrollHeight,140)+"px";};
+$("#chat-input").addEventListener("input",autoSize);
+$("#chat-input").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();$("#composer").requestSubmit();}});
+document.addEventListener("keydown",e=>{
+  if(view!=="review"||e.target.closest("textarea,input,select"))return;
+  if(e.key===" "){e.preventDefault();rev.revealed?grade(2):reveal();}
+  else if(["1","2","3","4"].includes(e.key))grade(+e.key-1);
+  else if(e.key==="z"||e.key==="Z")undo();
+});
+window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(["today","review","tutor","lessons","progress"].includes(h))go(h);});
+const h0=location.hash.slice(1);
+boot();
+if(["review","tutor","lessons","progress"].includes(h0))go(h0);
+</script>
+
+</body></html>
